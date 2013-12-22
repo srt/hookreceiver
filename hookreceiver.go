@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bitbucket"
 	"bytes"
 	"fmt"
+	"github.com/srt/hookreceiver/bitbucket"
 	"log"
 	"net/http"
 	"os"
