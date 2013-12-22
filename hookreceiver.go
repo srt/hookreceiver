@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bitbucket"
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 )
 
 type Server struct {
@@ -13,7 +16,7 @@ type Server struct {
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println(r)
 
-	var notificaton BitbucketNotification
+	var notificaton bitbucket.Notification
 
 	if err := notificaton.Parse(r); err != nil {
 		log.Println(err)
@@ -22,6 +25,15 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println(notificaton)
 	fmt.Fprintln(w, notificaton)
 	fmt.Fprintln(w, notificaton.Repository.Name)
+
+	cmd := exec.Command("ls", "-al", notificaton.Repository.Name)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Printf("Command exited with error: %s\n", err)
+	}
+	fmt.Printf("Result: %q\n", out.String())
 }
 
 func main() {
@@ -38,6 +50,7 @@ func realMain() int {
 	http.Handle("/", server)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
+		return 1
 	}
 	return 0
 }
