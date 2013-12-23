@@ -10,7 +10,7 @@ type Notification struct {
 	Canon_url  string
 	User       string
 	Repository Repository
-	Commits    []Commit
+	Commits    []Commit	
 }
 
 type Repository struct {
@@ -54,4 +54,12 @@ func (n *Notification) Parse(r *http.Request) error {
 
 func (n *Notification) parseBytes(bytes []byte) error {
 	return json.Unmarshal(bytes, n)
+}
+
+func (n *Notification) RepositoryUrl() (repositoryUrl string) {
+	repositoryUrl = n.Canon_url + n.Repository.Absolute_url
+	if repositoryUrl[len(repositoryUrl) - 1] == '/' {
+		repositoryUrl = repositoryUrl[:len(repositoryUrl) - 1]
+	}
+	return
 }
