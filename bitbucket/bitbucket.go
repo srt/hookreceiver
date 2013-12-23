@@ -10,7 +10,7 @@ type Notification struct {
 	Canon_url  string
 	User       string
 	Repository Repository
-	Commits    []Commit	
+	Commits    []Commit
 }
 
 type Repository struct {
@@ -44,22 +44,31 @@ type File struct {
 	Type string
 }
 
-func (n *Notification) Parse(r *http.Request) error {
+func Parse(r *http.Request) (n Notification, err error) {
 	r.ParseForm()
 	payload := r.Form.Get("payload")
 	bytes := []byte(payload)
 
-	return n.parseBytes(bytes)
+	return parseBytes(bytes)
 }
 
-func (n *Notification) parseBytes(bytes []byte) error {
-	return json.Unmarshal(bytes, n)
+func parseBytes(bytes []byte) (n Notification, err error) {
+	err = json.Unmarshal(bytes, &n)
+	return
 }
 
-func (n *Notification) RepositoryUrl() (repositoryUrl string) {
+func (n Notification) RepositoryUrl() (repositoryUrl string) {
 	repositoryUrl = n.Canon_url + n.Repository.Absolute_url
-	if repositoryUrl[len(repositoryUrl) - 1] == '/' {
-		repositoryUrl = repositoryUrl[:len(repositoryUrl) - 1]
+	if repositoryUrl[len(repositoryUrl)-1] == '/' {
+		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
+	}
+	return
+}
+
+func (n Notification) Branches() (branches map[string]bool) {
+	branches = make(map[string]bool)
+	for _, commit := range n.Commits {
+		branches[commit.Branch] = true
 	}
 	return
 }

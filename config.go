@@ -12,7 +12,22 @@ type Config struct {
 }
 
 type RepositoryConfig struct {
-	Command  string
+	Branch  string
+	Command string
+	Dir     string
+}
+
+func (c *Config) findRepositoryConfig(n Notification) (repositoryConfig RepositoryConfig, found bool) {
+	if repositoryConfig, found = c.Repositories[n.RepositoryUrl()]; !found {
+		return
+	}
+	if repositoryConfig.Branch != "" {
+		if _, found = n.Branches()[repositoryConfig.Branch]; !found {
+			repositoryConfig = RepositoryConfig{}
+			return
+		}
+	}
+	return
 }
 
 func readConfig(filename string) (config Config, err error) {

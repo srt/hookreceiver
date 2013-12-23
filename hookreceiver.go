@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"github.com/srt/hookreceiver/bitbucket"
@@ -15,31 +14,29 @@ type Server struct {
 }
 
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var notificaton bitbucket.Notification
-
-	if err := notificaton.Parse(r); err != nil {
+	notification, err := bitbucket.Parse(r)
+	if err != nil {
 		log.Printf("Unable to parse request: %s\n", err)
 		return
 	}
 
-	repo := notificaton.RepositoryUrl()
+	repo := notification.RepositoryUrl()
 
 	fmt.Fprintln(w, repo)
 	log.Printf("Received notification for repository %q", repo)
 
-	if repositoryConfig, found := config.Repositories[repo]; found {
+	if repositoryConfig, found := config.findRepositoryConfig(notification); found {
 		log.Printf("Executing command %q", repositoryConfig.Command)
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		err := cmd.Run()
+		cmd.Dir = repositoryConfig.Dir
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("Command exited with error: %s\n", err)
 		} else {
-			log.Printf("Command result: %q", out.String())
+			log.Printf("Command result: %q", string(out))
 		}
 	} else {
-		log.Printf("Repo not configured")
+		log.Printf("Repo not configured.")
 	}
 
 }

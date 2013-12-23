@@ -36,12 +36,22 @@ var expected = Notification{
 			Utctimestamp: "2013-12-22 02:54:39+00:00"}}}
 
 func TestParseBytes(t *testing.T) {
-	var actual Notification
-	err := actual.parseBytes([]byte(`{"repository": {"website": "", "fork": false, "name": "test", "scm": "git", "owner": "srt", "absolute_url": "/srt/test/", "slug": "test", "is_private": true}, "truncated": false, "commits": [{"node": "9d8a38ea7756", "files": [{"type": "modified", "file": "README.md"}], "branch": "master", "utctimestamp": "2013-12-22 02:54:39+00:00", "timestamp": "2013-12-22 03:54:39", "raw_node": "9d8a38ea7756a40405dc9bc8f7803700937b58d7", "message": "New date\n", "size": -1, "author": "srt", "parents": ["b8b2e71c4ecd"], "raw_author": "Stefan Reuter <stefan.reuter@example.com>", "revision": null}], "canon_url": "https://bitbucket.org", "user": "srt"}`))
+	actual, err := parseBytes([]byte(`{"repository": {"website": "", "fork": false, "name": "test", "scm": "git", "owner": "srt", "absolute_url": "/srt/test/", "slug": "test", "is_private": true}, "truncated": false, "commits": [{"node": "9d8a38ea7756", "files": [{"type": "modified", "file": "README.md"}], "branch": "master", "utctimestamp": "2013-12-22 02:54:39+00:00", "timestamp": "2013-12-22 03:54:39", "raw_node": "9d8a38ea7756a40405dc9bc8f7803700937b58d7", "message": "New date\n", "size": -1, "author": "srt", "parents": ["b8b2e71c4ecd"], "raw_author": "Stefan Reuter <stefan.reuter@example.com>", "revision": null}], "canon_url": "https://bitbucket.org", "user": "srt"}`))
 	if err != nil {
 		t.Error(err)
 	}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("got %v, want %v", actual, expected)
+	}
+}
+
+func TestBranches(t *testing.T) {
+	value, found := expected.Branches()["master"]
+
+	if !found {
+		t.Errorf("For branch 'master' no map entry found")
+	}
+	if !value {
+		t.Errorf("For branch 'master' got value %v, want %v", value, true)
 	}
 }
