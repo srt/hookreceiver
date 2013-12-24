@@ -1,11 +1,11 @@
-package bitbucket
+package main
 
 import (
 	"reflect"
 	"testing"
 )
 
-var expected = Notification{
+var expected = BitbucktNotification{
 	Canon_url: "https://bitbucket.org",
 	User:      "srt",
 	Repository: Repository{

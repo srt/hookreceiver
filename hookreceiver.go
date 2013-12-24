@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/srt/hookreceiver/bitbucket"
 	"log"
 	"net/http"
 	"os"
@@ -11,10 +10,11 @@ import (
 )
 
 type Server struct {
+	Parse Parse
 }
 
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	notification, err := bitbucket.Parse(r)
+	notification, err := s.Parse(r)
 	if err != nil {
 		log.Printf("Unable to parse request: %s\n", err)
 		return
@@ -59,8 +59,6 @@ func main() {
 
 // realMain is executed from main and returns the exit status to exit with.
 func realMain() int {
-	server := Server{}
-
 	var err error
 	config, err = readConfig(configFileName)
 	if err != nil {
@@ -68,7 +66,7 @@ func realMain() int {
 		return 1
 	}
 
-	http.Handle("/", server)
+	http.Handle("/hooks/bitbucket", Server{Parse: BitbucketParse})
 	if err := http.ListenAndServe(config.Addr, nil); err != nil {
 		log.Fatal(err)
 		return 1

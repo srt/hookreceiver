@@ -1,4 +1,4 @@
-package bitbucket
+package main
 
 import (
 	"encoding/json"
@@ -6,14 +6,14 @@ import (
 )
 
 // See https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management
-type Notification struct {
+type BitbucketNotification struct {
 	Canon_url  string
 	User       string
-	Repository Repository
-	Commits    []Commit
+	Repository BitbucketRepository
+	Commits    []BitbucketCommit
 }
 
-type Repository struct {
+type BitbucketRepository struct {
 	Absolute_url string
 	Fork         bool
 	Is_private   bool
@@ -24,10 +24,10 @@ type Repository struct {
 	Website      string
 }
 
-type Commit struct {
+type BitbucketCommit struct {
 	Author       string
 	Branch       string
-	Files        []File
+	Files        []BitbucketFile
 	Message      string
 	Node         string
 	Parents      []string
@@ -39,12 +39,12 @@ type Commit struct {
 	Utctimestamp string
 }
 
-type File struct {
+type BitbucketFile struct {
 	File string
 	Type string
 }
 
-func Parse(r *http.Request) (n Notification, err error) {
+func BitbucketParse(r *http.Request) (n Notification, err error) {
 	r.ParseForm()
 	payload := r.Form.Get("payload")
 	bytes := []byte(payload)
@@ -52,12 +52,12 @@ func Parse(r *http.Request) (n Notification, err error) {
 	return parseBytes(bytes)
 }
 
-func parseBytes(bytes []byte) (n Notification, err error) {
+func parseBytes(bytes []byte) (n BitbucketNotification, err error) {
 	err = json.Unmarshal(bytes, &n)
 	return
 }
 
-func (n Notification) RepositoryUrl() (repositoryUrl string) {
+func (n BitbucketNotification) RepositoryUrl() (repositoryUrl string) {
 	repositoryUrl = n.Canon_url + n.Repository.Absolute_url
 	if repositoryUrl[len(repositoryUrl)-1] == '/' {
 		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
@@ -65,7 +65,7 @@ func (n Notification) RepositoryUrl() (repositoryUrl string) {
 	return
 }
 
-func (n Notification) Branches() (branches map[string]bool) {
+func (n BitbucketNotification) Branches() (branches map[string]bool) {
 	branches = make(map[string]bool)
 	for _, commit := range n.Commits {
 		branches[commit.Branch] = true
