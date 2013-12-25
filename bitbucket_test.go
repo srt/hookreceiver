@@ -50,7 +50,9 @@ var notificationWithTwoCommits = BitbucketNotification{
 	Commits: []BitbucketCommit{
 		BitbucketCommit{
 			Author: "srt",
-			Branch: "master",
+			Branches: []string{
+				"master",
+				"bastard"},
 			Files: []BitbucketFile{
 				BitbucketFile{
 					File: "README.md",
@@ -98,6 +100,14 @@ func TestBranches(t *testing.T) {
 	}
 	if !value {
 		t.Errorf("For branch 'master' got value %v, want %v", value, true)
+	}
+
+	value, found = notificationWithTwoCommits.Branches()["bastard"]
+	if !found {
+		t.Errorf("For branch 'bastard' no map entry found")
+	}
+	if !value {
+		t.Errorf("For branch 'bastard' got value %v, want %v", value, true)
 	}
 
 	value, found = notificationWithTwoCommits.Branches()["dev"]

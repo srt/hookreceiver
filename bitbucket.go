@@ -27,6 +27,7 @@ type BitbucketRepository struct {
 
 type BitbucketCommit struct {
 	Author       string
+	Branches     []string
 	Branch       string
 	Files        []BitbucketFile
 	Message      string
@@ -72,7 +73,12 @@ func (n BitbucketNotification) RepositoryUrl() (repositoryUrl string) {
 func (n BitbucketNotification) Branches() (branches map[string]bool) {
 	branches = make(map[string]bool)
 	for _, commit := range n.Commits {
-		branches[commit.Branch] = true
+		if commit.Branch != "" {
+			branches[commit.Branch] = true
+		}
+		for _, branch := range commit.Branches {
+			branches[branch] = true
+		}
 	}
 	return
 }
