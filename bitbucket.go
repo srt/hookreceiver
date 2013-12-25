@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -47,6 +48,9 @@ type BitbucketFile struct {
 func BitbucketParse(r *http.Request) (n Notification, err error) {
 	r.ParseForm()
 	payload := r.Form.Get("payload")
+
+	log.Printf("Received payload %s", payload)
+
 	bytes := []byte(payload)
 
 	return parseBytes(bytes)

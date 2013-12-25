@@ -23,7 +23,7 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	repo := notification.RepositoryUrl()
 	branches := notification.Branches()
 
-	fmt.Fprintln(w, repo)
+	fmt.Fprintf(w, "Received notification for repository %q branches %q", repo, branches)
 	log.Printf("Received notification for repository %q branches %q", repo, branches)
 
 	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {

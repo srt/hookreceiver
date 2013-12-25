@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-var expected = BitbucktNotification{
+var expected = BitbucketNotification{
 	Canon_url: "https://bitbucket.org",
 	User:      "srt",
-	Repository: Repository{
+	Repository: BitbucketRepository{
 		Absolute_url: "/srt/test/",
 		Fork:         false,
 		Is_private:   true,
@@ -17,12 +17,58 @@ var expected = BitbucktNotification{
 		Scm:          "git",
 		Slug:         "test",
 		Website:      ""},
-	Commits: []Commit{
-		Commit{
+	Commits: []BitbucketCommit{
+		BitbucketCommit{
 			Author: "srt",
 			Branch: "master",
-			Files: []File{
-				File{
+			Files: []BitbucketFile{
+				BitbucketFile{
+					File: "README.md",
+					Type: "modified"}},
+			Message:      "New date\n",
+			Node:         "9d8a38ea7756",
+			Parents:      []string{"b8b2e71c4ecd"},
+			Raw_author:   "Stefan Reuter <stefan.reuter@example.com>",
+			Raw_node:     "9d8a38ea7756a40405dc9bc8f7803700937b58d7",
+			Revision:     0,
+			Size:         -1,
+			Timestamp:    "2013-12-22 03:54:39",
+			Utctimestamp: "2013-12-22 02:54:39+00:00"}}}
+
+var notificationWithTwoCommits = BitbucketNotification{
+	Canon_url: "https://bitbucket.org",
+	User:      "srt",
+	Repository: BitbucketRepository{
+		Absolute_url: "/srt/test/",
+		Fork:         false,
+		Is_private:   true,
+		Name:         "test",
+		Owner:        "srt",
+		Scm:          "git",
+		Slug:         "test",
+		Website:      ""},
+	Commits: []BitbucketCommit{
+		BitbucketCommit{
+			Author: "srt",
+			Branch: "master",
+			Files: []BitbucketFile{
+				BitbucketFile{
+					File: "README.md",
+					Type: "modified"}},
+			Message:      "New date\n",
+			Node:         "9d8a38ea7756",
+			Parents:      []string{"b8b2e71c4ecd"},
+			Raw_author:   "Stefan Reuter <stefan.reuter@example.com>",
+			Raw_node:     "9d8a38ea7756a40405dc9bc8f7803700937b58d7",
+			Revision:     0,
+			Size:         -1,
+			Timestamp:    "2013-12-22 03:54:39",
+			Utctimestamp: "2013-12-22 02:54:39+00:00"},
+		BitbucketCommit{
+			Author: "srt",
+			Branch: "dev",
+			Files: []BitbucketFile{
+				BitbucketFile{
 					File: "README.md",
 					Type: "modified"}},
 			Message:      "New date\n",
@@ -46,12 +92,19 @@ func TestParseBytes(t *testing.T) {
 }
 
 func TestBranches(t *testing.T) {
-	value, found := expected.Branches()["master"]
-
+	value, found := notificationWithTwoCommits.Branches()["master"]
 	if !found {
 		t.Errorf("For branch 'master' no map entry found")
 	}
 	if !value {
 		t.Errorf("For branch 'master' got value %v, want %v", value, true)
+	}
+
+	value, found = notificationWithTwoCommits.Branches()["dev"]
+	if !found {
+		t.Errorf("For branch 'dev' no map entry found")
+	}
+	if !value {
+		t.Errorf("For branch 'dev' got value %v, want %v", value, true)
 	}
 }
