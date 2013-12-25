@@ -70,7 +70,7 @@ func makeConfigPathVisitor(config *Config) func(path string, f os.FileInfo, err 
 }
 
 func readConfig(filename string) (config Config, err error) {
-	filepath.Walk(filename, makeConfigPathVisitor(&config))
+	err = filepath.Walk(filename, makeConfigPathVisitor(&config))
 	log.Printf("Config loaded from %q: %#v", filename, config)
 	return
 }

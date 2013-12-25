@@ -10,7 +10,8 @@ import (
 )
 
 type Server struct {
-	Parse Parse
+	Parse  Parse
+	Config Config
 }
 
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +27,7 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Received notification for repository %q branches %q", repo, branches)
 	log.Printf("Received notification for repository %q branches %q", repo, branches)
 
-	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {
+	if repositoryConfig, found := s.Config.FindRepositoryConfig(notification); found {
 		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
 		cmd.Dir = repositoryConfig.Dir
@@ -42,31 +43,24 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 var configFileName string
-var config Config
 
 func init() {
 	flag.StringVar(&configFileName, "c", "/etc/hookreceiver.conf.d", "Config file or directory name")
 }
 
 func main() {
-	// Call realMain instead of doing the work here so we can use
-	// `defer` statements within the function and have them work properly.
-	// (defers aren't called with os.Exit)
-
 	flag.Parse()
-	os.Exit(realMain())
+	os.Exit(run())
 }
 
-// realMain is executed from main and returns the exit status to exit with.
-func realMain() int {
-	var err error
-	config, err = readConfig(configFileName)
+func run() int {
+	config, err := readConfig(configFileName)
 	if err != nil {
 		log.Fatal(err)
 		return 1
 	}
 
-	http.Handle("/hooks/bitbucket/", Server{Parse: BitbucketParse})
+	http.Handle("/hooks/bitbucket/", Server{BitbucketParse, config})
 	if err := http.ListenAndServe(config.Addr, nil); err != nil {
 		log.Fatal(err)
 		return 1
