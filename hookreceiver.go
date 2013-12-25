@@ -25,7 +25,7 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, repo)
 	log.Printf("Received notification for repository %q", repo)
 
-	if repositoryConfig, found := config.findRepositoryConfig(notification); found {
+	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {
 		log.Printf("Executing command %q", repositoryConfig.Command)
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
 		cmd.Dir = repositoryConfig.Dir
@@ -36,7 +36,7 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Command result: %q", string(out))
 		}
 	} else {
-		log.Printf("Repo not configured.")
+		log.Printf("Repo/branch not configured.")
 	}
 
 }
@@ -45,7 +45,7 @@ var configFileName string
 var config Config
 
 func init() {
-	flag.StringVar(&configFileName, "c", "hookreceiver.conf", "Config file name")
+	flag.StringVar(&configFileName, "c", "/etc/hookreceiver.conf", "Config file or directory name")
 }
 
 func main() {
