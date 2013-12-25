@@ -26,14 +26,13 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received notification for repository %q", repo)
 
 	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {
-		log.Printf("Executing command %q", repositoryConfig.Command)
+		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
 		cmd.Dir = repositoryConfig.Dir
 		out, err := cmd.CombinedOutput()
+		log.Printf("Command output: %q", string(out))
 		if err != nil {
 			log.Printf("Command exited with error: %s\n", err)
-		} else {
-			log.Printf("Command result: %q", string(out))
 		}
 	} else {
 		log.Printf("Repo/branch not configured.")
@@ -66,7 +65,7 @@ func realMain() int {
 		return 1
 	}
 
-	http.Handle("/hooks/bitbucket", Server{Parse: BitbucketParse})
+	http.Handle("/hooks/bitbucket/", Server{Parse: BitbucketParse})
 	if err := http.ListenAndServe(config.Addr, nil); err != nil {
 		log.Fatal(err)
 		return 1
