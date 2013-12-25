@@ -45,7 +45,7 @@ var configFileName string
 var config Config
 
 func init() {
-	flag.StringVar(&configFileName, "c", "/etc/hookreceiver.conf", "Config file or directory name")
+	flag.StringVar(&configFileName, "c", "/etc/hookreceiver.conf.d", "Config file or directory name")
 }
 
 func main() {
