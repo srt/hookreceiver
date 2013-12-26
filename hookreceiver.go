@@ -4,17 +4,19 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 )
 
-type Server struct {
-	Parse  Parse
-	Config Config
+type HookReceiveServer struct {
+	Parse Parse
 }
 
-func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	notification, err := s.Parse(r)
 	if err != nil {
 		log.Printf("Unable to parse request: %s\n", err)
@@ -24,10 +26,10 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	repo := notification.RepositoryUrl()
 	branches := notification.Branches()
 
-	fmt.Fprintf(w, "Received notification for repository %q branches %q", repo, branches)
-	log.Printf("Received notification for repository %q branches %q", repo, branches)
+	fmt.Fprintf(w, "Ok, thanks. Received notification for repository %q branches %v\n", repo, branches)
+	log.Printf("Received notification for repository %q branches %v", repo, branches)
 
-	if repositoryConfig, found := s.Config.FindRepositoryConfig(notification); found {
+	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {
 		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
 		cmd.Dir = repositoryConfig.Dir
@@ -42,10 +44,23 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-var configFileName string
+var configPath string
+var config Config
 
 func init() {
-	flag.StringVar(&configFileName, "c", "/etc/hookreceiver.conf.d", "Config file or directory name")
+	flag.StringVar(&configPath, "c", "/etc/hookreceiver.conf.d", "Config path (file or directory)")
+}
+
+func reloadConfig(c <-chan os.Signal) {
+	for s := range c {
+		log.Printf("Got %s signal: Reloading configuration", s)
+		newConfig, err := ReadConfig(configPath)
+		if err == nil {
+			config = newConfig
+		} else {
+			log.Println(err)
+		}
+	}
 }
 
 func main() {
@@ -54,17 +69,39 @@ func main() {
 }
 
 func run() int {
-	config, err := readConfig(configFileName)
+	var err error
+
+	config, err = ReadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 		return 1
 	}
 
-	http.Handle("/hooks/bitbucket/", Server{BitbucketParse, config})
-	if err := http.ListenAndServe(config.Addr, nil); err != nil {
+	http.Handle("/hooks/bitbucket/", HookReceiveServer{BitbucketParse})
+
+	server := &http.Server{Addr: config.Addr}
+	listener, err := net.Listen("tcp", server.Addr)
+	if err != nil {
 		log.Fatal(err)
 		return 1
 	}
+
+	go server.Serve(listener)
+	// if err := server.Serve(listener); err != nil {
+	// 	log.Fatal(err)
+	// 	return 1
+	// }
+
+	log.Printf("HTTP server started")
+
+	hupChannel := make(chan os.Signal, 1)
+	signal.Notify(hupChannel, syscall.SIGHUP)
+	go reloadConfig(hupChannel)
+
+	killChannel := make(chan os.Signal, 1)
+	signal.Notify(killChannel, os.Kill, os.Interrupt)
+
+	<-killChannel
 
 	return 0
 }

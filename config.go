@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/DisposaBoy/JsonConfigReader"
 	"log"
 	"os"
@@ -39,8 +38,7 @@ func (c *Config) FindRepositoryConfig(n Notification) (repositoryConfig Reposito
 	return
 }
 
-func makeConfigPathVisitor(config *Config) func(path string, f os.FileInfo, err error) error {
-
+func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err error) error {
 	return func(path string, f os.FileInfo, err error) error {
 		if f.Mode().IsRegular() {
 			var currentConfig Config
@@ -53,10 +51,10 @@ func makeConfigPathVisitor(config *Config) func(path string, f os.FileInfo, err 
 			defer file.Close()
 
 			reader := JsonConfigReader.New(file)
-			err = json.NewDecoder(reader).Decode(&currentConfig)
-			if err != nil {
-				err = fmt.Errorf("Can't parse config file %q: %v", path, err)
-				return err
+			jsonErr := json.NewDecoder(reader).Decode(&currentConfig)
+			if jsonErr != nil {
+				log.Printf("Can't parse config file %q: %v", path, jsonErr)
+				return nil
 			}
 
 			if currentConfig.Addr != "" {
@@ -64,13 +62,15 @@ func makeConfigPathVisitor(config *Config) func(path string, f os.FileInfo, err 
 			}
 			config.Repositories = append(config.Repositories, currentConfig.Repositories...)
 		}
-
 		return nil
 	}
 }
 
-func readConfig(filename string) (config Config, err error) {
-	err = filepath.Walk(filename, makeConfigPathVisitor(&config))
+func ReadConfig(filename string) (config Config, err error) {
+	err = filepath.Walk(filename, makeConfigPathWalkFunc(&config))
+	if err != nil {
+		return
+	}
 	log.Printf("Config loaded from %q: %#v", filename, config)
 	return
 }
