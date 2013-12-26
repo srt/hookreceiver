@@ -1,5 +1,5 @@
-Hookrecevier
-================================
+Hookreceiver
+============
 
 Listens for SCM hooks from Bitbucket and executes a shell command when a notification is received.
 
@@ -87,3 +87,8 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
   ]
 }
 </pre>
+
+License
+-------
+
+Hookreceiver is released under the [MIT License](http://www.opensource.org/licenses/MIT).
