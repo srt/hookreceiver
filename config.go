@@ -21,22 +21,19 @@ type RepositoryConfig struct {
 	Dir     string
 }
 
-func (c *Config) FindRepositoryConfig(n Notification) (repositoryConfig RepositoryConfig, found bool) {
-	for _, repositoryConfig = range c.Repositories {
+func (c *Config) FindRepositoryConfig(n Notification) (RepositoryConfig, bool) {
+	for _, repositoryConfig := range c.Repositories {
 		if repositoryConfig.Url != n.RepositoryUrl() {
 			continue
 		}
 		if repositoryConfig.Branch != "" {
-			if _, found = n.Branches()[repositoryConfig.Branch]; !found {
+			if _, found := n.Branches()[repositoryConfig.Branch]; !found {
 				continue
 			}
 		}
-		found = true
-		return
+		return repositoryConfig, true
 	}
-	repositoryConfig = RepositoryConfig{}
-	found = false
-	return
+	return RepositoryConfig{}, false
 }
 
 func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err error) error {
@@ -71,11 +68,12 @@ func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err
 	}
 }
 
-func ReadConfig(filename string) (config Config, err error) {
-	err = filepath.Walk(filename, makeConfigPathWalkFunc(&config))
+func ReadConfig(filename string) (Config, error) {
+	config := Config{}
+	err := filepath.Walk(filename, makeConfigPathWalkFunc(&config))
 	if err != nil {
-		return
+		return config, err
 	}
 	log.Printf("Config loaded from %q: %#v", filename, config)
-	return
+	return config, nil
 }
