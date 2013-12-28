@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/DisposaBoy/JsonConfigReader"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/DisposaBoy/JsonConfigReader"
 )
 
 type Config struct {

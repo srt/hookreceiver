@@ -23,9 +23,11 @@ Configuration File
 
 Configuration files are JSON files. You define the adress/port hookreceiver will listen on (Addr) and 
 an array of repository configurations. When a notifaction is received for one of the configured
-repositories the given command is executed with `/bin/sh -c`. You can restrict the command to 
+repositories identified by `URL` the given command is executed with `/bin/sh -c`. You can restrict the command to 
 notifications that contain changes for a specific branch using the `Branch` property and set the
 working directory for the command with `Dir`.
+
+`Url` must be set to the canonical URL of the repository. For Bitbucket this is `https://bitbucket.org/user/repo`.
 
 <pre>
 {
