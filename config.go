@@ -41,6 +41,10 @@ func (c *Config) FindRepositoryConfig(n Notification) (repositoryConfig Reposito
 
 func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err error) error {
 	return func(path string, f os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if f.Mode().IsRegular() {
 			var currentConfig Config
 			var file *os.File
