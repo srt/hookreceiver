@@ -10,10 +10,26 @@ import (
 	"os/exec"
 	"os/signal"
 	"syscall"
+	"time"
+)
+
+const (
+	BUFFER_SIZE = 20
+	TIMEOUT     = 500 * time.Millisecond
 )
 
 type HookReceiveServer struct {
-	Parse Parse
+	Parse               Parse
+	NotificationChannel chan Notification
+}
+
+func handleNotifications(ch <-chan Notification) {
+	for {
+		select {
+		case notification := <-ch:
+			handleNotification(notification)
+		}
+	}
 }
 
 func handleNotification(notification Notification) {
@@ -45,10 +61,15 @@ func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	repo := notification.RepositoryUrl()
 	branches := notification.Branches()
 
-	fmt.Fprintf(w, "Ok, thanks for the notification about repository %q branches %v\n", repo, branches)
-	log.Printf("Received notification for repository %q branches %v", repo, branches)
-
-	go handleNotification(notification)
+	select {
+	case s.NotificationChannel <- notification:
+		fmt.Fprintf(w, "Ok, thanks for the notification about repository %q branches %v\n", repo, branches)
+		log.Printf("Received and dispatched notification for repository %q branches %v", repo, branches)
+	case <-time.After(TIMEOUT):
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Sorry, can't handle this notifaction right now (too many notifications pending)\n")
+		log.Printf("Received but discarded notification for repository %q branches %v (too many notifications pending)", repo, branches)
+	}
 }
 
 var configPath string
@@ -84,7 +105,9 @@ func run() int {
 		return 1
 	}
 
-	http.Handle("/hooks/bitbucket/", HookReceiveServer{BitbucketParse})
+	notificationChannel := make(chan Notification, BUFFER_SIZE)
+	go handleNotifications(notificationChannel)
+	http.Handle("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationChannel})
 
 	server := &http.Server{Addr: config.Addr}
 	listener, err := net.Listen("tcp", server.Addr)
@@ -94,10 +117,6 @@ func run() int {
 	}
 
 	go server.Serve(listener)
-	// if err := server.Serve(listener); err != nil {
-	// 	log.Fatal(err)
-	// 	return 1
-	// }
 
 	log.Printf("HTTP server started")
 
@@ -109,6 +128,9 @@ func run() int {
 	signal.Notify(killChannel, os.Kill, os.Interrupt)
 
 	<-killChannel
+	log.Println("Exiting")
+	listener.Close()
+	// TODO: terminate handleNotifications()
 
 	return 0
 }

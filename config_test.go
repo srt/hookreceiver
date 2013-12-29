@@ -42,6 +42,7 @@ var config1 = Config{Repositories: []RepositoryConfig{repositoryConfig1, reposit
 var findRepositoryConfigTests = []findRepositoryConfigTest{
 	{config1, mockNotification{}, false, RepositoryConfig{}},
 	{config1, mockNotification{"https://bitbucket.org/user/repo1", []string{}}, false, RepositoryConfig{}},
+	{config1, mockNotification{"https://bitbucket.org/user/repo1", []string{"dev"}}, false, RepositoryConfig{}},
 	{config1, mockNotification{"https://bitbucket.org/user/repo1", []string{"dev", "master"}}, true, repositoryConfig1},
 	{config1, mockNotification{"https://bitbucket.org/user/repo2", []string{}}, true, repositoryConfig2},
 	{config1, mockNotification{"https://bitbucket.org/user/repo2", []string{"dev", "master"}}, true, repositoryConfig2},
