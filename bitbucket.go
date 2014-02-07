@@ -11,6 +11,7 @@ type BitbucketNotification struct {
 	Canon_url  string
 	User       string
 	Repository BitbucketRepository
+	Truncated  bool
 	Commits    []BitbucketCommit
 }
 
