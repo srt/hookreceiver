@@ -23,9 +23,8 @@ Configuration File
 
 Configuration files are JSON files. You define the adress/port hookreceiver will listen on (Addr) and 
 an array of repository configurations. When a notifaction is received for one of the configured
-repositories identified by `URL` the given command is executed with `/bin/sh -c`. You can restrict the command to 
-notifications that contain changes for a specific branch using the `Branch` property and set the
-working directory for the command with `Dir`.
+repositories identified by `URL` the given command is executed with `/bin/sh -c` in the
+working directory set with `Dir`.
 
 `Url` must be set to the canonical URL of the repository. For Bitbucket this is `https://bitbucket.org/user/repo`.
 
@@ -35,19 +34,22 @@ working directory for the command with `Dir`.
   "Repositories": [
     {
       "Url": "https://bitbucket.org/srt/foo",
-      "Branch": "master",
       "Command": "git pull",
       "Dir": "/var/www/foo"
     },
     {
       "Url": "https://bitbucket.org/srt/bar",
-      "Branch": "develop",
       "Command": "git pull",
       "Dir": "/var/www/bar"
     }
   ]
 }
 </pre>
+
+You can restrict the command to notifications that contain changes for a specific branch using the `Branch` property.
+However keep in mind that you may miss some commits as most providers only provide detailed information like
+affected files and branches if pushes do not exceed a certain size limit. Thus using the `Branch` property is generally
+discouraged.
 
 Configuration Directory
 -----------------------
@@ -68,7 +70,6 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
   "Repositories": [
     {
       "Url": "https://bitbucket.org/srt/foo",
-      "Branch": "master",
       "Command": "git pull",
       "Dir": "/var/www/foo"
     }
@@ -82,7 +83,6 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
   "Repositories": [
     {
       "Url": "https://bitbucket.org/srt/bar",
-      "Branch": "develop",
       "Command": "git pull",
       "Dir": "/var/www/bar"
     }
