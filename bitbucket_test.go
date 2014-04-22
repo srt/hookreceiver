@@ -5,12 +5,12 @@ import (
 	"testing"
 )
 
-type parseBytesTest struct {
+type bitbucketParseBytesTest struct {
 	input    string
 	expected BitbucketNotification
 }
 
-var parseBytesTests = []parseBytesTest{
+var bitbucketParseBytesTests = []bitbucketParseBytesTest{
 	{`{"repository": {"website": "", "fork": false, "name": "test", "scm": "git", "owner": "srt", "absolute_url": "/srt/test/", "slug": "test", "is_private": true}, "truncated": false, "commits": [{"node": "9d8a38ea7756", "files": [{"type": "modified", "file": "README.md"}], "branch": "master", "utctimestamp": "2013-12-22 02:54:39+00:00", "timestamp": "2013-12-22 03:54:39", "raw_node": "9d8a38ea7756a40405dc9bc8f7803700937b58d7", "message": "New date\n", "size": -1, "author": "srt", "parents": ["b8b2e71c4ecd"], "raw_author": "Stefan Reuter <stefan.reuter@example.com>", "revision": null}], "canon_url": "https://bitbucket.org", "user": "srt"}`,
 		BitbucketNotification{
 			Canon_url: "https://bitbucket.org",
@@ -90,9 +90,9 @@ var parseBytesTests = []parseBytesTest{
 					Utctimestamp: "2013-12-26 00:43:52+00:00"}}}},
 }
 
-func TestParseBytes(t *testing.T) {
-	for _, test := range parseBytesTests {
-		actual, err := parseBytes([]byte(test.input))
+func TestBitbucketParseBytes(t *testing.T) {
+	for _, test := range bitbucketParseBytesTests {
+		actual, err := bitbucketParseBytes([]byte(test.input))
 		if err != nil {
 			t.Error(err)
 		}
@@ -102,12 +102,12 @@ func TestParseBytes(t *testing.T) {
 	}
 }
 
-type branchesTest struct {
+type bitbucketBranchesTest struct {
 	notification BitbucketNotification
 	branches     []string
 }
 
-var branchesTests = []branchesTest{
+var bitbucketBranchesTests = []bitbucketBranchesTest{
 	// one commit, one branch
 	{BitbucketNotification{Commits: []BitbucketCommit{
 		BitbucketCommit{Branch: "master"}}},
@@ -127,12 +127,12 @@ var branchesTests = []branchesTest{
 		BitbucketCommit{Branches: []string{"master", "bastard"}},
 		BitbucketCommit{Branch: "master"}}},
 		[]string{"master", "bastard"}},
-	{parseBytesTests[0].expected, []string{"master"}},
-	{parseBytesTests[1].expected, []string{"master", "dev3.0", "merge", "dev", "mobile"}},
+	{bitbucketParseBytesTests[0].expected, []string{"master"}},
+	{bitbucketParseBytesTests[1].expected, []string{"master", "dev3.0", "merge", "dev", "mobile"}},
 }
 
-func TestBranches(t *testing.T) {
-	for _, test := range branchesTests {
+func TestBitbucketBranches(t *testing.T) {
+	for _, test := range bitbucketBranchesTests {
 		for _, expectedBranch := range test.branches {
 			value, found := test.notification.Branches()[expectedBranch]
 			if !found {

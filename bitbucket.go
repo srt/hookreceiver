@@ -55,10 +55,10 @@ func BitbucketParse(r *http.Request) (n Notification, err error) {
 
 	bytes := []byte(payload)
 
-	return parseBytes(bytes)
+	return bitbucketParseBytes(bytes)
 }
 
-func parseBytes(bytes []byte) (n BitbucketNotification, err error) {
+func bitbucketParseBytes(bytes []byte) (n BitbucketNotification, err error) {
 	err = json.Unmarshal(bytes, &n)
 	return
 }
