@@ -7,6 +7,8 @@ Currently supported hooks:
 
 * Bitbucket [POST Hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management):
   Use `http://your-host:8080/hooks/bitbucket/whatever` for the URL.
+* Gitlab push Hook:
+  Use `http://your-host:8080/hooks/gitlab/whatever` for the URL.
 
 Usage
 -----
