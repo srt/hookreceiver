@@ -108,6 +108,7 @@ func run() int {
 	notificationChannel := make(chan Notification, BUFFER_SIZE)
 	go handleNotifications(notificationChannel)
 	http.Handle("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationChannel})
+	http.Handle("/hooks/gitlab/", HookReceiveServer{GitlabParse, notificationChannel})
 
 	server := &http.Server{Addr: config.Addr}
 	listener, err := net.Listen("tcp", server.Addr)
