@@ -19,21 +19,21 @@ const (
 )
 
 type HookReceiveServer struct {
-	Parse               Parse
-	NotificationChannel chan Notification
+	Parse                      Parse
+	NotificationRequestChannel chan NotificationRequest
 }
 
-func handleNotifications(ch <-chan Notification) {
+func handleNotificationRequests(ch <-chan NotificationRequest) {
 	for {
 		select {
-		case notification := <-ch:
-			handleNotification(notification)
+		case notificationRequest := <-ch:
+			handleNotificationRequest(notificationRequest)
 		}
 	}
 }
 
-func handleNotification(notification Notification) {
-	if repositoryConfig, found := config.FindRepositoryConfig(notification); found {
+func handleNotificationRequest(notificationRequest NotificationRequest) {
+	if repositoryConfig, found := config.FindRepositoryConfig(notificationRequest.Path, notificationRequest.Notification); found {
 		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 
 		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
@@ -58,17 +58,20 @@ func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := notification.RepositoryUrl()
+	path := r.URL.Path
+	repositoryUrl := notification.RepositoryUrl()
 	branches := notification.Branches()
 
+	notificationRequest := NotificationRequest{path, notification}
+
 	select {
-	case s.NotificationChannel <- notification:
-		fmt.Fprintf(w, "Ok, thanks for the notification about repository %q branches %v\n", repo, branches)
-		log.Printf("Received and dispatched notification for repository %q branches %v", repo, branches)
+	case s.NotificationRequestChannel <- notificationRequest:
+		fmt.Fprintf(w, "Ok, thanks for the notification about repository %q branches %v\n", repositoryUrl, branches)
+		log.Printf("Received and dispatched notification for repository %q branches %v", repositoryUrl, branches)
 	case <-time.After(TIMEOUT):
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Sorry, can't handle this notifaction right now (too many notifications pending)\n")
-		log.Printf("Received but discarded notification for repository %q branches %v (too many notifications pending)", repo, branches)
+		log.Printf("Received but discarded notification for repository %q branches %v (too many notifications pending)", repositoryUrl, branches)
 	}
 }
 
@@ -105,10 +108,11 @@ func run() int {
 		return 1
 	}
 
-	notificationChannel := make(chan Notification, BUFFER_SIZE)
-	go handleNotifications(notificationChannel)
-	http.Handle("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationChannel})
-	http.Handle("/hooks/gitlab/", HookReceiveServer{GitlabParse, notificationChannel})
+	notificationRequestChannel := make(chan NotificationRequest, BUFFER_SIZE)
+	go handleNotificationRequests(notificationRequestChannel)
+	http.Handle("/hooks/bitbucket/", http.StripPrefix("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationRequestChannel}))
+	http.Handle("/hooks/gitlab/", http.StripPrefix("/hooks/gitlab/", HookReceiveServer{GitlabParse, notificationRequestChannel}))
+	http.Handle("/hooks/stash/", http.StripPrefix("/hooks/stash/", HookReceiveServer{StashParse, notificationRequestChannel}))
 
 	server := &http.Server{Addr: config.Addr}
 	listener, err := net.Listen("tcp", server.Addr)

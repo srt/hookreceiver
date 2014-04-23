@@ -15,15 +15,19 @@ type Config struct {
 }
 
 type RepositoryConfig struct {
+	Name    string
 	Url     string
 	Branch  string
 	Command string
 	Dir     string
 }
 
-func (c *Config) FindRepositoryConfig(n Notification) (RepositoryConfig, bool) {
+func (c *Config) FindRepositoryConfig(name string, n Notification) (RepositoryConfig, bool) {
 	for _, repositoryConfig := range c.Repositories {
-		if repositoryConfig.Url != n.RepositoryUrl() {
+		if repositoryConfig.Url != "" && repositoryConfig.Url != n.RepositoryUrl() {
+			continue
+		}
+		if repositoryConfig.Name != "" && repositoryConfig.Name != name {
 			continue
 		}
 		if repositoryConfig.Branch != "" {

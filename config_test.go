@@ -50,7 +50,7 @@ var findRepositoryConfigTests = []findRepositoryConfigTest{
 
 func TestFindRepositoryConfig(t *testing.T) {
 	for i, test := range findRepositoryConfigTests {
-		actual, found := test.config.FindRepositoryConfig(test.notification)
+		actual, found := test.config.FindRepositoryConfig("", test.notification)
 		if found != test.expectMatch {
 			t.Errorf("%d. got %#v, want %#v", i, found, test.expectMatch)
 		}

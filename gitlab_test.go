@@ -83,7 +83,7 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 			Total_Commits_Count: 4,
 		}},
 
-	{`{"before":"0000000000000000000000000000000000000000","after":"8dd3b755cf933430b30835d40c13c903cb27d576","ref":"refs/heads/master","user_id":22,"user_name":"Stefan Reuter","project_id":61,"repository":{"name":"Hilde Hirsch","url":"git@gitlab.ep.lan:stefan.reuter/hirsch.git","description":"","homepage":"https://gitlab.ep.lan/stefan.reuter/hirsch"},"commits":[],"total_commits_count":0}`,
+	{`{"before":"0000000000000000000000000000000000000000","after":"8dd3b755cf933430b30835d40c13c903cb27d576","ref":"refs/heads/master","user_id":22,"user_name":"Stefan Reuter","project_id":61,"repository":{"name":"Hilde Hirsch","url":"git@gitlab.example.com:stefan.reuter/hirsch.git","description":"","homepage":"https://gitlab.example.com/stefan.reuter/hirsch"},"commits":[],"total_commits_count":0}`,
 		GitlabNotification{
 			Before:     "0000000000000000000000000000000000000000",
 			After:      "8dd3b755cf933430b30835d40c13c903cb27d576",
@@ -93,14 +93,14 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 			Project_Id: 61,
 			Repository: GitlabRepository{
 				Name:        "Hilde Hirsch",
-				Url:         "git@gitlab.ep.lan:stefan.reuter/hirsch.git",
+				Url:         "git@gitlab.example.com:stefan.reuter/hirsch.git",
 				Description: "",
-				Homepage:    "https://gitlab.ep.lan/stefan.reuter/hirsch",
+				Homepage:    "https://gitlab.example.com/stefan.reuter/hirsch",
 			},
 			Commits:             []GitlabCommit{},
 			Total_Commits_Count: 0,
 		}},
-	{`{"before":"6de0da623948c631bcde27b1242268bf00913fb6","after":"bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","ref":"refs/heads/master","user_id":22,"user_name":"Stefan Reuter","project_id":61,"repository":{"name":"Hilde Hirsch","url":"git@gitlab.ep.lan:stefan.reuter/hirsch.git","description":"","homepage":"https://gitlab.ep.lan/stefan.reuter/hirsch"},"commits":[{"id":"bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","message":"Test","timestamp":"2014-04-22T16:29:41+02:00","url":"https://gitlab.ep.lan/stefan.reuter/hirsch/commit/bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","author":{"name":"Stefan Reuter","email":"stefan.reuter@reucon.com"}}],"total_commits_count":1}`,
+	{`{"before":"6de0da623948c631bcde27b1242268bf00913fb6","after":"bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","ref":"refs/heads/master","user_id":22,"user_name":"Stefan Reuter","project_id":61,"repository":{"name":"Hilde Hirsch","url":"git@gitlab.example.com:stefan.reuter/hirsch.git","description":"","homepage":"https://gitlab.example.com/stefan.reuter/hirsch"},"commits":[{"id":"bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","message":"Test","timestamp":"2014-04-22T16:29:41+02:00","url":"https://gitlab.example.com/stefan.reuter/hirsch/commit/bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a","author":{"name":"Stefan Reuter","email":"stefan.reuter@example.com"}}],"total_commits_count":1}`,
 		GitlabNotification{
 			Before:     "6de0da623948c631bcde27b1242268bf00913fb6",
 			After:      "bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a",
@@ -110,19 +110,19 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 			Project_Id: 61,
 			Repository: GitlabRepository{
 				Name:        "Hilde Hirsch",
-				Url:         "git@gitlab.ep.lan:stefan.reuter/hirsch.git",
+				Url:         "git@gitlab.example.com:stefan.reuter/hirsch.git",
 				Description: "",
-				Homepage:    "https://gitlab.ep.lan/stefan.reuter/hirsch",
+				Homepage:    "https://gitlab.example.com/stefan.reuter/hirsch",
 			},
 			Commits: []GitlabCommit{
 				GitlabCommit{
 					Id:        "bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a",
 					Message:   "Test",
 					Timestamp: "2014-04-22T16:29:41+02:00",
-					Url:       "https://gitlab.ep.lan/stefan.reuter/hirsch/commit/bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a",
+					Url:       "https://gitlab.example.com/stefan.reuter/hirsch/commit/bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a",
 					Author: GitlabAuthor{
 						Name:  "Stefan Reuter",
-						Email: "stefan.reuter@reucon.com",
+						Email: "stefan.reuter@example.com",
 					}}},
 			Total_Commits_Count: 1,
 		}},
