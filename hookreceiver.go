@@ -66,12 +66,12 @@ func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	select {
 	case s.NotificationRequestChannel <- notificationRequest:
-		fmt.Fprintf(w, "Ok, thanks for the notification about repository %q branches %v\n", repositoryUrl, branches)
-		log.Printf("Received and dispatched notification for repository %q branches %v", repositoryUrl, branches)
+		fmt.Fprintf(w, "Ok, thanks for the notification about repository url %q, name %q, branches %v\n", repositoryUrl, path, branches)
+		log.Printf("Received and dispatched notification for repository url %q, name %q, branches %v", repositoryUrl, path, branches)
 	case <-time.After(TIMEOUT):
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Sorry, can't handle this notifaction right now (too many notifications pending)\n")
-		log.Printf("Received but discarded notification for repository %q branches %v (too many notifications pending)", repositoryUrl, branches)
+		log.Printf("Received but discarded notification for repository url %q, name %q, branches %v (too many notifications pending)", repositoryUrl, path, branches)
 	}
 }
 

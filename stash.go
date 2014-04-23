@@ -67,7 +67,7 @@ func stashParseBytes(bytes []byte) (n StashNotification, err error) {
 }
 
 func (n StashNotification) RepositoryUrl() (repositoryUrl string) {
-	repositoryUrl = n.Repository.Project.Key + n.Repository.Name
+	repositoryUrl = n.Repository.Project.Key + "/" + n.Repository.Name
 	if repositoryUrl[len(repositoryUrl)-1] == '/' {
 		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
 	}
