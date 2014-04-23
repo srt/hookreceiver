@@ -113,6 +113,7 @@ func run() int {
 	http.Handle("/hooks/bitbucket/", http.StripPrefix("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationRequestChannel}))
 	http.Handle("/hooks/gitlab/", http.StripPrefix("/hooks/gitlab/", HookReceiveServer{GitlabParse, notificationRequestChannel}))
 	http.Handle("/hooks/stash/", http.StripPrefix("/hooks/stash/", HookReceiveServer{StashParse, notificationRequestChannel}))
+	http.Handle("/hooks/generic/", http.StripPrefix("/hooks/generic/", HookReceiveServer{GenericParse, notificationRequestChannel}))
 
 	server := &http.Server{Addr: config.Addr}
 	listener, err := net.Listen("tcp", server.Addr)
