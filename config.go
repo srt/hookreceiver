@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -40,6 +41,20 @@ func (c *Config) FindRepositoryConfig(name string, n Notification) (RepositoryCo
 	return RepositoryConfig{}, false
 }
 
+func appendConfig(config *Config, reader io.Reader) error {
+	var currentConfig Config
+	err := json.NewDecoder(reader).Decode(&currentConfig)
+	if err != nil {
+		return err
+	}
+
+	if currentConfig.Addr != "" {
+		config.Addr = currentConfig.Addr
+	}
+	config.Repositories = append(config.Repositories, currentConfig.Repositories...)
+	return nil
+}
+
 func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err error) error {
 	return func(path string, f os.FileInfo, err error) error {
 		if err != nil {
@@ -47,7 +62,6 @@ func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err
 		}
 
 		if f.Mode().IsRegular() {
-			var currentConfig Config
 			var file *os.File
 
 			file, err = os.Open(path)
@@ -56,17 +70,11 @@ func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err
 			}
 			defer file.Close()
 
-			reader := JsonConfigReader.New(file)
-			jsonErr := json.NewDecoder(reader).Decode(&currentConfig)
-			if jsonErr != nil {
-				log.Printf("Can't parse config file %q: %v", path, jsonErr)
+			err = appendConfig(config, JsonConfigReader.New(file))
+			if err != nil {
+				log.Printf("Can't parse config file %q: %v", path, err)
 				return nil
 			}
-
-			if currentConfig.Addr != "" {
-				config.Addr = currentConfig.Addr
-			}
-			config.Repositories = append(config.Repositories, currentConfig.Repositories...)
 		}
 		return nil
 	}
@@ -74,6 +82,7 @@ func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err
 
 func ReadConfig(filename string) (Config, error) {
 	config := Config{}
+	config.Addr = ":8080"
 	err := filepath.Walk(filename, makeConfigPathWalkFunc(&config))
 	if err != nil {
 		return config, err

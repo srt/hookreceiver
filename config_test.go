@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"reflect"
 	"testing"
 )
 
@@ -56,6 +58,57 @@ func TestFindRepositoryConfig(t *testing.T) {
 		}
 		if actual != test.expected {
 			t.Errorf("%d. got %#v, want %#v", i, actual, test.expected)
+		}
+	}
+}
+
+type appendConfigTest struct {
+	input    string
+	expected Config
+}
+
+var appendConfigTests = []appendConfigTest{
+	{`{
+  "Addr": ":8081",
+  "Repositories": [
+    {
+      "URL": "https://bitbucket.org/srt/foo",
+      "Command": "git pull",
+      "Dir": "/var/www/foo"
+    },
+    {
+      "Name": "bar",
+      "Command": "git pull",
+      "Dir": "/var/www/bar"
+    }
+  ]
+}`, Config{
+		Addr: ":8081",
+		Repositories: []RepositoryConfig{
+			RepositoryConfig{
+				URL:     "https://bitbucket.org/srt/foo",
+				Command: "git pull",
+				Dir:     "/var/www/foo",
+			},
+			RepositoryConfig{
+				Name:    "bar",
+				Command: "git pull",
+				Dir:     "/var/www/bar",
+			},
+		}},
+	}}
+
+func TestAppendConfig(t *testing.T) {
+	actual := Config{}
+	actual.Addr = ":8080"
+
+	for _, test := range appendConfigTests {
+		err := appendConfig(&actual, bytes.NewReader([]byte(test.input)))
+		if err != nil {
+			t.Error(err)
+		}
+		if !reflect.DeepEqual(actual, test.expected) {
+			t.Errorf("got %#v, want %#v", actual, test.expected)
 		}
 	}
 }
