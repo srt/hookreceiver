@@ -50,6 +50,15 @@ func handleNotificationRequest(notificationRequest NotificationRequest) {
 }
 
 func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if config.Secret != "" {
+		if config.Secret != r.URL.Query().Get("Secret") && config.Secret != r.URL.Query().Get("secret") {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprintf(w, "Invalid Secret\n")
+			log.Printf("Invalid Secret\n")
+			return
+		}
+	}
+
 	notification, err := s.Parse(r)
 	if err != nil {
 		w.WriteHeader(http.StatusNotAcceptable)
@@ -124,7 +133,7 @@ func run() int {
 
 	go server.Serve(listener)
 
-	log.Printf("HTTP server started")
+	log.Printf("HTTP server started on %s", config.Addr)
 
 	hupChannel := make(chan os.Signal, 1)
 	signal.Notify(hupChannel, syscall.SIGHUP)

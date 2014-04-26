@@ -12,6 +12,7 @@ import (
 
 type Config struct {
 	Addr         string
+	Secret       string
 	Repositories []RepositoryConfig
 }
 
@@ -51,6 +52,10 @@ func appendConfig(config *Config, reader io.Reader) error {
 	if currentConfig.Addr != "" {
 		config.Addr = currentConfig.Addr
 	}
+	if currentConfig.Secret != "" {
+		config.Secret = currentConfig.Secret
+	}
+
 	config.Repositories = append(config.Repositories, currentConfig.Repositories...)
 	return nil
 }

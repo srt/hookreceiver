@@ -70,6 +70,7 @@ type appendConfigTest struct {
 var appendConfigTests = []appendConfigTest{
 	{`{
   "Addr": ":8081",
+  "Secret": "t0ps3cr3t",
   "Repositories": [
     {
       "URL": "https://bitbucket.org/srt/foo",
@@ -83,7 +84,8 @@ var appendConfigTests = []appendConfigTest{
     }
   ]
 }`, Config{
-		Addr: ":8081",
+		Addr:   ":8081",
+		Secret: "t0ps3cr3t",
 		Repositories: []RepositoryConfig{
 			RepositoryConfig{
 				URL:     "https://bitbucket.org/srt/foo",
