@@ -14,6 +14,13 @@ Currently supported hooks:
 * Generic Hook that does not parse the payload:
   Use `http://your-host:8080/hooks/generic/repo_name` for the URL.
 
+Installation
+------------
+
+<pre>
+go get github.com/srt/hookreceiver
+</pre>
+
 Usage
 -----
 
