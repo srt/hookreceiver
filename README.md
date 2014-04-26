@@ -6,9 +6,13 @@ Listens for SCM hooks from Bitbucket and executes a shell command when a notific
 Currently supported hooks:
 
 * Bitbucket [POST Hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management):
-  Use `http://your-host:8080/hooks/bitbucket/whatever` for the URL.
+  Use `http://your-host:8080/hooks/bitbucket/repo_name` for the URL.
 * Gitlab push Hook:
-  Use `http://your-host:8080/hooks/gitlab/whatever` for the URL.
+  Use `http://your-host:8080/hooks/gitlab/repo_name` for the URL.
+* Stash [POST service webhook](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash):
+  Use `http://your-host:8080/hooks/stash/repo_name` for the URL.
+* Generic Hook that does not parse the payload:
+  Use `http://your-host:8080/hooks/generic/repo_name` for the URL.
 
 Usage
 -----
@@ -28,30 +32,27 @@ an array of repository configurations. When a notifaction is received for one of
 repositories identified by `URL` the given command is executed with `/bin/sh -c` in the
 working directory set with `Dir`.
 
-`Url` must be set to the canonical URL of the repository. For Bitbucket this is `https://bitbucket.org/user/repo`.
+`URL` indicates the canonical URL of the repository. For example when using Bitbucket this is `https://bitbucket.org/user/repo`.
+
+Instead of using the `URL` property you can use `Name`. This is the `repo_name` part in the hookreciever URL. If you configure your repository to call `http://your-host:8080/hooks/bitbucket/bar` the `Name` would be `bar`. Using the name allows to configure repository providers that do not include the URL in their payload like Stash or the Generic provider.  
 
 <pre>
 {
   "Addr": ":8080",
   "Repositories": [
     {
-      "Url": "https://bitbucket.org/srt/foo",
+      "URL": "https://bitbucket.org/srt/foo",
       "Command": "git pull",
       "Dir": "/var/www/foo"
     },
     {
-      "Url": "https://bitbucket.org/srt/bar",
+      "Name": "bar",
       "Command": "git pull",
       "Dir": "/var/www/bar"
     }
   ]
 }
 </pre>
-
-You can restrict the command to notifications that contain changes for a specific branch using the `Branch` property.
-However keep in mind that you may miss some commits as most providers only provide detailed information like
-affected files and branches if pushes do not exceed a certain size limit. Thus using the `Branch` property is generally
-discouraged.
 
 Configuration Directory
 -----------------------
@@ -71,7 +72,7 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
 {
   "Repositories": [
     {
-      "Url": "https://bitbucket.org/srt/foo",
+      "URL": "https://bitbucket.org/srt/foo",
       "Command": "git pull",
       "Dir": "/var/www/foo"
     }
@@ -84,13 +85,51 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
 {
   "Repositories": [
     {
-      "Url": "https://bitbucket.org/srt/bar",
+      "URL": "https://bitbucket.org/srt/bar",
       "Command": "git pull",
       "Dir": "/var/www/bar"
     }
   ]
 }
 </pre>
+
+Provider Specific Notes
+-----------------------
+
+### Bitbucket
+
+Use `http://your-host:8080/hooks/bitbucket/repo_name` for the URL.
+
+Bitbucket supports the `Name` and `URL` configuration properties. The URL is of the form `https://bitbucket.org/user/repo`.
+
+You can also restrict the command to notifications that contain changes for a specific branch using the `Branch` property.
+However keep in mind that you may miss some commits as most providers only provide detailed information like
+affected files and branches if pushes do not exceed a certain size limit. Thus using the `Branch` property is generally
+discouraged.
+
+See also: https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management
+
+### Gitlab
+
+Use `http://your-host:8080/hooks/gitlab/repo_name` for the URL.
+
+Gitlab supports the `Name` and `URL` configuration properties. The URL is of the form `https://gitlab.example.com/group/repo`. This is the value `Homepage` in the JSON payload.
+
+See also: http://doc.gitlab.com/ce/web_hooks/web_hooks.html
+
+### Stash
+
+Use `http://your-host:8080/hooks/stash/repo_name` for the URL.
+
+Stash does not include the canonical URL in the payload so hookreciever is unable to match a stash repository via URL. Use `Name` instead of `URL` to configure Stash hooks.
+
+See also: https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash
+
+### Generic
+
+Use `http://your-host:8080/hooks/generic/repo_name` for the URL.
+
+The Generic provider does not parse the payload so it can be used to support arbitray systems. Use `Name` instead of `URL` to configure Generic hooks.
 
 License
 -------
