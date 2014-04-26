@@ -1,13 +1,13 @@
 Hookreceiver
 ============
 
-Listens for SCM hooks from Bitbucket and executes a shell command when a notification is received.
+Listens for SCM hooks and executes a shell command when a notification is received.
 
 Currently supported hooks:
 
 * Bitbucket [POST Hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management):
   Use `http://your-host:8080/hooks/bitbucket/repo_name` for the URL.
-* Gitlab push Hook:
+* Gitlab [Push Hook](http://doc.gitlab.com/ce/web_hooks/web_hooks.html):
   Use `http://your-host:8080/hooks/gitlab/repo_name` for the URL.
 * Stash [POST service webhook](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash):
   Use `http://your-host:8080/hooks/stash/repo_name` for the URL.
