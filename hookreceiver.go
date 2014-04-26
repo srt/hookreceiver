@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	BUFFER_SIZE = 20
-	TIMEOUT     = 500 * time.Millisecond
+	bufferSize = 20
+	timeout    = 500 * time.Millisecond
 )
 
 type HookReceiveServer struct {
@@ -59,19 +59,19 @@ func (s HookReceiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := r.URL.Path
-	repositoryUrl := notification.RepositoryUrl()
+	repositoryURL := notification.RepositoryURL()
 	branches := notification.Branches()
 
 	notificationRequest := NotificationRequest{path, notification}
 
 	select {
 	case s.NotificationRequestChannel <- notificationRequest:
-		fmt.Fprintf(w, "Ok, thanks for the notification about repository url %q, name %q, branches %v\n", repositoryUrl, path, branches)
-		log.Printf("Received and dispatched notification for repository url %q, name %q, branches %v", repositoryUrl, path, branches)
-	case <-time.After(TIMEOUT):
+		fmt.Fprintf(w, "Ok, thanks for the notification about repository URL %q, name %q, branches %v\n", repositoryURL, path, branches)
+		log.Printf("Received and dispatched notification for repository URL %q, name %q, branches %v", repositoryURL, path, branches)
+	case <-time.After(timeout):
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Sorry, can't handle this notifaction right now (too many notifications pending)\n")
-		log.Printf("Received but discarded notification for repository url %q, name %q, branches %v (too many notifications pending)", repositoryUrl, path, branches)
+		log.Printf("Received but discarded notification for repository URLK %q, name %q, branches %v (too many notifications pending)", repositoryURL, path, branches)
 	}
 }
 
@@ -108,7 +108,7 @@ func run() int {
 		return 1
 	}
 
-	notificationRequestChannel := make(chan NotificationRequest, BUFFER_SIZE)
+	notificationRequestChannel := make(chan NotificationRequest, bufferSize)
 	go handleNotificationRequests(notificationRequestChannel)
 	http.Handle("/hooks/bitbucket/", http.StripPrefix("/hooks/bitbucket/", HookReceiveServer{BitbucketParse, notificationRequestChannel}))
 	http.Handle("/hooks/gitlab/", http.StripPrefix("/hooks/gitlab/", HookReceiveServer{GitlabParse, notificationRequestChannel}))

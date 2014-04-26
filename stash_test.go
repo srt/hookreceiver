@@ -15,22 +15,22 @@ var stashParseBytesTests = []stashParseBytesTest{
 		StashNotification{
 			Repository: StashRepository{
 				Slug:          "test",
-				Id:            61,
+				ID:            61,
 				Name:          "test",
-				ScmId:         "git",
+				ScmID:         "git",
 				State:         "AVAILABLE",
 				StatusMessage: "Available",
 				Forkable:      true,
 				Project: StashProject{
 					Key:        "~SRT",
-					Id:         2,
+					ID:         2,
 					Name:       "Stefan Reuter",
 					Type:       "PERSONAL",
 					IsPersonal: true,
 					Owner: StashUser{
 						Name:         "srt",
 						EmailAddress: "stefan.reuter@example.com",
-						Id:           5,
+						ID:           5,
 						DisplayName:  "Stefan Reuter",
 						Active:       true,
 						Slug:         "srt",
@@ -41,7 +41,7 @@ var stashParseBytesTests = []stashParseBytesTest{
 			},
 			RefChanges: []StashRefChange{
 				StashRefChange{
-					RefId:    "refs/heads/master",
+					RefID:    "refs/heads/master",
 					FromHash: "8ba5559a89a4c4ae0402cac4f8deec8b8bcb2ae1",
 					ToHash:   "fec32d23bb614eabd451d8c6e6f9dc14378dcf7c",
 					Type:     "UPDATE",

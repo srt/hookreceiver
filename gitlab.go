@@ -8,29 +8,29 @@ import (
 )
 
 type GitlabNotification struct {
-	Before              string
-	After               string
-	Ref                 string
-	User_Id             int
-	User_Name           string
-	Project_Id          int
-	Repository          GitlabRepository
-	Commits             []GitlabCommit
-	Total_Commits_Count int
+	Before            string
+	After             string
+	Ref               string
+	UserID            int    `json:"User_Id"`
+	UserName          string `json:"User_Name"`
+	ProjectID         int    `json:"Project_Id"`
+	Repository        GitlabRepository
+	Commits           []GitlabCommit
+	TotalCommitsCount int `json:"Total_Commits_Count"`
 }
 
 type GitlabRepository struct {
 	Name        string
-	Url         string
+	URL         string
 	Description string
 	Homepage    string
 }
 
 type GitlabCommit struct {
-	Id        string
+	ID        string
 	Message   string
 	Timestamp string
-	Url       string
+	URL       string
 	Author    GitlabAuthor
 }
 
@@ -53,10 +53,10 @@ func gitlabParseBytes(bytes []byte) (n GitlabNotification, err error) {
 	return
 }
 
-func (n GitlabNotification) RepositoryUrl() (repositoryUrl string) {
-	repositoryUrl = n.Repository.Homepage
-	if repositoryUrl[len(repositoryUrl)-1] == '/' {
-		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
+func (n GitlabNotification) RepositoryURL() (repositoryURL string) {
+	repositoryURL = n.Repository.Homepage
+	if repositoryURL[len(repositoryURL)-1] == '/' {
+		repositoryURL = repositoryURL[:len(repositoryURL)-1]
 	}
 	return
 }

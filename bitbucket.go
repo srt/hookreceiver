@@ -8,7 +8,7 @@ import (
 
 // See https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management
 type BitbucketNotification struct {
-	Canon_url  string
+	CanonURL   string `json:"Canon_url"`
 	User       string
 	Repository BitbucketRepository
 	Truncated  bool
@@ -16,14 +16,14 @@ type BitbucketNotification struct {
 }
 
 type BitbucketRepository struct {
-	Absolute_url string
-	Fork         bool
-	Is_private   bool
-	Name         string
-	Owner        string
-	Scm          string
-	Slug         string
-	Website      string
+	AbsoluteURL string `json:"Absolute_url"`
+	Fork        bool
+	IsPrivate   bool `json:"Is_private"`
+	Name        string
+	Owner       string
+	Scm         string
+	Slug        string
+	Website     string
 }
 
 type BitbucketCommit struct {
@@ -34,12 +34,12 @@ type BitbucketCommit struct {
 	Message      string
 	Node         string
 	Parents      []string
-	Raw_author   string
-	Raw_node     string
+	RawAuthor    string `json:"Raw_author"`
+	RawNode      string `json:"Raw_node"`
 	Revision     int
 	Size         int
 	Timestamp    string
-	Utctimestamp string
+	UTCTimestamp string
 }
 
 type BitbucketFile struct {
@@ -63,10 +63,10 @@ func bitbucketParseBytes(bytes []byte) (n BitbucketNotification, err error) {
 	return
 }
 
-func (n BitbucketNotification) RepositoryUrl() (repositoryUrl string) {
-	repositoryUrl = n.Canon_url + n.Repository.Absolute_url
-	if repositoryUrl[len(repositoryUrl)-1] == '/' {
-		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
+func (n BitbucketNotification) RepositoryURL() (repositoryURL string) {
+	repositoryURL = n.CanonURL + n.Repository.AbsoluteURL
+	if repositoryURL[len(repositoryURL)-1] == '/' {
+		repositoryURL = repositoryURL[:len(repositoryURL)-1]
 	}
 	return
 }

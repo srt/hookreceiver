@@ -5,21 +5,21 @@ import (
 )
 
 var repositoryConfig1 = RepositoryConfig{
-	Url:    "https://bitbucket.org/user/repo1",
+	URL:    "https://bitbucket.org/user/repo1",
 	Branch: "master",
 }
 
 var repositoryConfig2 = RepositoryConfig{
-	Url: "https://bitbucket.org/user/repo2",
+	URL: "https://bitbucket.org/user/repo2",
 }
 
 type mockNotification struct {
-	repositoryUrl string
+	repositoryURL string
 	branches      []string
 }
 
-func (n mockNotification) RepositoryUrl() string {
-	return n.repositoryUrl
+func (n mockNotification) RepositoryURL() string {
+	return n.repositoryURL
 }
 
 func (n mockNotification) Branches() map[string]bool {

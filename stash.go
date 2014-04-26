@@ -14,10 +14,10 @@ type StashNotification struct {
 }
 
 type StashRepository struct {
-	Id            int
+	ID            int
 	Slug          string
 	Name          string
-	ScmId         string
+	ScmID         string
 	State         string
 	StatusMessage string
 	Forkable      bool
@@ -26,7 +26,7 @@ type StashRepository struct {
 }
 
 type StashProject struct {
-	Id         int
+	ID         int
 	Key        string
 	Name       string
 	Public     bool
@@ -36,7 +36,7 @@ type StashProject struct {
 }
 
 type StashRefChange struct {
-	RefId    string
+	RefID    string
 	FromHash string
 	ToHash   string
 	Type     string
@@ -45,7 +45,7 @@ type StashRefChange struct {
 type StashUser struct {
 	Name         string
 	EmailAddress string
-	Id           int
+	ID           int
 	DisplayName  string
 	Active       bool
 	Slug         string
@@ -66,10 +66,10 @@ func stashParseBytes(bytes []byte) (n StashNotification, err error) {
 	return
 }
 
-func (n StashNotification) RepositoryUrl() (repositoryUrl string) {
-	repositoryUrl = n.Repository.Project.Key + "/" + n.Repository.Name
-	if repositoryUrl[len(repositoryUrl)-1] == '/' {
-		repositoryUrl = repositoryUrl[:len(repositoryUrl)-1]
+func (n StashNotification) RepositoryURL() (repositoryURL string) {
+	repositoryURL = n.Repository.Project.Key + "/" + n.Repository.Name
+	if repositoryURL[len(repositoryURL)-1] == '/' {
+		repositoryURL = repositoryURL[:len(repositoryURL)-1]
 	}
 	return
 }

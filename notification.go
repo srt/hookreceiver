@@ -10,7 +10,7 @@ type NotificationRequest struct {
 }
 
 type Notification interface {
-	RepositoryUrl() string
+	RepositoryURL() string
 	Branches() map[string]bool
 }
 

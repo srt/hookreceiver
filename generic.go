@@ -11,8 +11,8 @@ func GenericParse(r *http.Request) (n Notification, err error) {
 	return GenericNotification{}, nil
 }
 
-func (n GenericNotification) RepositoryUrl() (repositoryUrl string) {
-	repositoryUrl = ""
+func (n GenericNotification) RepositoryURL() (repositoryURL string) {
+	repositoryURL = ""
 	return
 }
 
