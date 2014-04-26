@@ -85,7 +85,7 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
 {
   "Repositories": [
     {
-      "URL": "https://bitbucket.org/srt/bar",
+      "Name": "bar",
       "Command": "git pull",
       "Dir": "/var/www/bar"
     }
@@ -103,9 +103,24 @@ Use `http://your-host:8080/hooks/bitbucket/repo_name` for the URL.
 Bitbucket supports the `Name` and `URL` configuration properties. The URL is of the form `https://bitbucket.org/user/repo`.
 
 You can also restrict the command to notifications that contain changes for a specific branch using the `Branch` property.
-However keep in mind that you may miss some commits as most providers only provide detailed information like
+However keep in mind that you may miss some commits as Bitbucket only provides detailed information like
 affected files and branches if pushes do not exceed a certain size limit. Thus using the `Branch` property is generally
 discouraged.
+
+Example:
+<pre>
+{
+  "Repositories": [
+    {
+      "URL": "https://bitbucket.org/srt/foo",
+      "Branch": "develop",
+      "Command": "git pull",
+      "Dir": "/var/www/foo"
+    }
+  ]
+}
+</pre>
+
 
 See also: https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management
 
