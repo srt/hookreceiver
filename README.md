@@ -1,5 +1,7 @@
 Hookreceiver
 ============
+[![Gobuild Download](http://gobuild.io/badge/github.com/srt/hookreceiver/download.png)](http://gobuild.io/github.com/srt/hookreceiver)
+
 
 Listens for SCM hooks and executes a shell command when a notification is received.
 
