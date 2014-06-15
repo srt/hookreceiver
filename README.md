@@ -1,6 +1,7 @@
 Hookreceiver
 ============
 [![Gobuild Download](http://gobuild.io/badge/github.com/srt/hookreceiver/download.png)](http://gobuild.io/github.com/srt/hookreceiver)
+[![Build Status](https://travis-ci.org/srt/hookreceiver.svg?branch=master)](https://travis-ci.org/srt/hookreceiver)
 
 
 Listens for SCM hooks and executes a shell command when a notification is received.
