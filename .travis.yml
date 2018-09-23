@@ -1,4 +1,28 @@
 language: go
-go: 
- - 1.3
 
+go:
+  - '1.11'
+
+env:
+  global:
+    - GOARCH=amd64
+  matrix:
+    - GOOS=linux
+    - GOOS=darwin
+    - GOOS=windows
+
+install:
+  - dep ensure
+
+script:
+  - go build -o hookreceiver-${GOOS}-${GOARCH}
+  - if [ $GOOS == "linux" ]; then go test -bench=.; fi
+
+deploy:
+  provider: releases
+  api_key:
+    secure: qWGNdTNfV8DvGdycHl6mek0KlAfY1t72Kf60gI2H/WI/C32hlZG/cgCV8PKLw2XKC+/cnzIXcz3RW/b1TvSOBElsC9CjwRa3Hco0T4X0WPEF4dkfIbIHbTOoSgmQl/thxgKV81oyKxnJp8wmT2mArh5qOAPuxN3ILJkFS2fAMkAYUcPl8vufXnh1VFeaboRw1ILVtnIIZ7359FEpOwNMoMuU1UiulcOqf3hWnW58DjrJOk/H+5OQN6qOW7D6PgWZBLvo5sau/L0s2sJOZDbq1CabqiW3LkQOSj8TbL//CsZwhq1qwoaYzllHNFrcfH7bZyR9K20SCEyO/SBtVVQlxeDv7mKTYS9LxQohZzoV0Q1skUK0p5NCE1oDwxjW24YUxS49ZQ1xkKBsf86zRsaLR4GaGloseW/XQGK0DKInbW99DsSOe89qjAyWHTVGC8eF5upur7qTgYAaJpEiz3TlyuOzkhY1tanAQlG3H5vz5etpucXsY5ehH5+hLlc5c0nEMAlapfHJsJ2CloR4hVHa4IhiK26caBjG6n9ldZaFGHCjW1tNokY8j2TGqeyysmnzYS0muTCP9lEq4CJvaW6V03hCDh9wgXm+usjfUKX29sY4l2QKt7ZhNE/BUVnRovLOFxnoMlQ5xVpPrQurlveJezqI0wDnyGqfQRACm1eOv5Y=
+  file: hookreceiver-${GOOS}-${GOARCH}
+  on:
+    repo: cweagans/hookreceiver
+    tags: true
