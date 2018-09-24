@@ -158,3 +158,8 @@ License
 -------
 
 Hookreceiver is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+
+Acknowledgement
+---------------
+
+Thanks to @srt for writing the original version of this software.
