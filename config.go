@@ -20,7 +20,7 @@ type RepositoryConfig struct {
 	Name    string
 	URL     string
 	Branch  string
-	Command string
+	Command []string
 	Dir     string
 }
 

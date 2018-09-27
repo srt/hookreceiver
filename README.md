@@ -50,12 +50,16 @@ Instead of using the `URL` property you can use `Name`. This is the `repo_name` 
   "Repositories": [
     {
       "URL": "https://bitbucket.org/srt/foo",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/foo"
     },
     {
       "Name": "bar",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/bar"
     }
   ]
@@ -81,7 +85,9 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
   "Repositories": [
     {
       "URL": "https://bitbucket.org/srt/foo",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/foo"
     }
   ]
@@ -94,7 +100,9 @@ form the configuration. This makes it easy to use hookreceiver with puppet and s
   "Repositories": [
     {
       "Name": "bar",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/bar"
     }
   ]
@@ -122,7 +130,9 @@ Example:
     {
       "URL": "https://bitbucket.org/srt/foo",
       "Branch": "develop",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/foo"
     }
   ]

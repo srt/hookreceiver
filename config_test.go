@@ -56,8 +56,20 @@ func TestFindRepositoryConfig(t *testing.T) {
 		if found != test.expectMatch {
 			t.Errorf("%d. got %#v, want %#v", i, found, test.expectMatch)
 		}
-		if actual != test.expected {
-			t.Errorf("%d. got %#v, want %#v", i, actual, test.expected)
+		if actual.Branch != test.expected.Branch {
+			t.Errorf("%d. got %#v, want %#v", i, actual.Branch, test.expected.Branch)
+		}
+		if actual.Name != test.expected.Name {
+			t.Errorf("%d. got %#v, want %#v", i, actual.Name, test.expected.Name)
+		}
+		if actual.Dir != test.expected.Dir {
+			t.Errorf("%d. got %#v, want %#v", i, actual.Dir, test.expected.Dir)
+		}
+		if actual.URL != test.expected.URL {
+			t.Errorf("%d. got %#v, want %#v", i, actual.URL, test.expected.URL)
+		}
+		if !reflect.DeepEqual(actual.Command, test.expected.Command) {
+			t.Errorf("%d. got %#v, want %#v", i, actual.Command, test.expected.Command)
 		}
 	}
 }
@@ -74,12 +86,16 @@ var appendConfigTests = []appendConfigTest{
   "Repositories": [
     {
       "URL": "https://bitbucket.org/srt/foo",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/foo"
     },
     {
       "Name": "bar",
-      "Command": "git pull",
+      "Command": [
+        "git pull"
+      ],
       "Dir": "/var/www/bar"
     }
   ]
@@ -88,14 +104,18 @@ var appendConfigTests = []appendConfigTest{
 		Secret: "t0ps3cr3t",
 		Repositories: []RepositoryConfig{
 			RepositoryConfig{
-				URL:     "https://bitbucket.org/srt/foo",
-				Command: "git pull",
-				Dir:     "/var/www/foo",
+				URL: "https://bitbucket.org/srt/foo",
+				Command: []string{
+					"git pull",
+				},
+				Dir: "/var/www/foo",
 			},
 			RepositoryConfig{
-				Name:    "bar",
-				Command: "git pull",
-				Dir:     "/var/www/bar",
+				Name: "bar",
+				Command: []string{
+					"git pull",
+				},
+				Dir: "/var/www/bar",
 			},
 		}},
 	}}

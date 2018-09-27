@@ -36,13 +36,15 @@ func handleNotificationRequest(notificationRequest NotificationRequest) {
 	if repositoryConfig, found := config.FindRepositoryConfig(notificationRequest.Path, notificationRequest.Notification); found {
 		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 
-		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
-		cmd.Dir = repositoryConfig.Dir
-		out, err := cmd.CombinedOutput()
+		for _, cmdstr := range repositoryConfig.Command {
+			cmd := exec.Command("/bin/sh", "-c", cmdstr)
+			cmd.Dir = repositoryConfig.Dir
+			out, err := cmd.CombinedOutput()
 
-		log.Printf("Command output: %q", string(out))
-		if err != nil {
-			log.Printf("Command exited with error: %s\n", err)
+			log.Printf("Command output: %q", string(out))
+			if err != nil {
+				log.Printf("Command exited with error: %s\n", err)
+			}
 		}
 	} else {
 		log.Printf("Repo/branch not configured.")
