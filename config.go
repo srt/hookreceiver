@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/DisposaBoy/JsonConfigReader"
 )
 
 type Config struct {
@@ -75,7 +73,7 @@ func makeConfigPathWalkFunc(config *Config) func(path string, f os.FileInfo, err
 			}
 			defer file.Close()
 
-			err = appendConfig(config, JsonConfigReader.New(file))
+			err = appendConfig(config, file)
 			if err != nil {
 				log.Printf("Can't parse config file %q: %v", path, err)
 				return nil
