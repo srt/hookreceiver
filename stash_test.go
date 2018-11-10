@@ -40,7 +40,7 @@ var stashParseBytesTests = []stashParseBytesTest{
 				Public: false,
 			},
 			RefChanges: []StashRefChange{
-				StashRefChange{
+				{
 					RefID:    "refs/heads/master",
 					FromHash: "8ba5559a89a4c4ae0402cac4f8deec8b8bcb2ae1",
 					ToHash:   "fec32d23bb614eabd451d8c6e6f9dc14378dcf7c",

@@ -87,12 +87,12 @@ var appendConfigTests = []appendConfigTest{
 		Addr:   ":8081",
 		Secret: "t0ps3cr3t",
 		Repositories: []RepositoryConfig{
-			RepositoryConfig{
+			{
 				URL:     "https://bitbucket.org/srt/foo",
 				Command: "git pull",
 				Dir:     "/var/www/foo",
 			},
-			RepositoryConfig{
+			{
 				Name:    "bar",
 				Command: "git pull",
 				Dir:     "/var/www/bar",

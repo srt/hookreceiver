@@ -25,11 +25,11 @@ var bitbucketParseBytesTests = []bitbucketParseBytesTest{
 				Slug:        "test",
 				Website:     ""},
 			Commits: []BitbucketCommit{
-				BitbucketCommit{
+				{
 					Author: "srt",
 					Branch: "master",
 					Files: []BitbucketFile{
-						BitbucketFile{
+						{
 							File: "README.md",
 							Type: "modified"}},
 					Message:      "New date\n",
@@ -55,12 +55,12 @@ var bitbucketParseBytesTests = []bitbucketParseBytesTest{
 				Slug:        "hirsch-forum",
 				Website:     ""},
 			Commits: []BitbucketCommit{
-				BitbucketCommit{
+				{
 					Author:   "hans",
 					Branches: []string{"dev3.0", "merge", "dev", "mobile"},
 					Branch:   "",
 					Files: []BitbucketFile{
-						BitbucketFile{
+						{
 							File: "styles/merge/template/overall_header.html",
 							Type: "modified"}},
 					Message:      "Add missing base tag\n",
@@ -72,11 +72,11 @@ var bitbucketParseBytesTests = []bitbucketParseBytesTest{
 					Size:         -1,
 					Timestamp:    "2013-12-26 01:43:36",
 					UTCTimestamp: "2013-12-26 00:43:36+00:00"},
-				BitbucketCommit{Author: "hans",
+				{Author: "hans",
 					Branches: []string(nil),
 					Branch:   "master",
 					Files: []BitbucketFile{
-						BitbucketFile{
+						{
 							File: "styles/merge/template/overall_header.html",
 							Type: "modified"}},
 					Message:      "Merge branch 'dev'\n",
@@ -110,22 +110,22 @@ type bitbucketBranchesTest struct {
 var bitbucketBranchesTests = []bitbucketBranchesTest{
 	// one commit, one branch
 	{BitbucketNotification{Commits: []BitbucketCommit{
-		BitbucketCommit{Branch: "master"}}},
+		{Branch: "master"}}},
 		[]string{"master"}},
 	// three commits, one without a branch and two each with one branch
 	{BitbucketNotification{Commits: []BitbucketCommit{
-		BitbucketCommit{Branch: "master"},
-		BitbucketCommit{},
-		BitbucketCommit{Branch: "dev"}}},
+		{Branch: "master"},
+		{},
+		{Branch: "dev"}}},
 		[]string{"master", "dev"}},
 	// two commits, one with two branches and one with 1 branch
 	{BitbucketNotification{Commits: []BitbucketCommit{
-		BitbucketCommit{Branches: []string{"master", "bastard"}},
-		BitbucketCommit{Branch: "dev"}}},
+		{Branches: []string{"master", "bastard"}},
+		{Branch: "dev"}}},
 		[]string{"master", "bastard", "dev"}},
 	{BitbucketNotification{Commits: []BitbucketCommit{
-		BitbucketCommit{Branches: []string{"master", "bastard"}},
-		BitbucketCommit{Branch: "master"}}},
+		{Branches: []string{"master", "bastard"}},
+		{Branch: "master"}}},
 		[]string{"master", "bastard"}},
 	{bitbucketParseBytesTests[0].expected, []string{"master"}},
 	{bitbucketParseBytesTests[1].expected, []string{"master", "dev3.0", "merge", "dev", "mobile"}},
