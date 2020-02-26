@@ -62,7 +62,7 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 				Description: "",
 				Homepage:    "http://localhost/diaspora"},
 			Commits: []GitlabCommit{
-				GitlabCommit{
+				{
 					ID:        "b6568db1bc1dcd7f8b4d5a946b0b91f9dacd7327",
 					Message:   "Update Catalan translation to e38cb41.",
 					Timestamp: "2011-12-12T14:27:31+02:00",
@@ -71,7 +71,7 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 						Name:  "Jordi Mallach",
 						Email: "jordi@softcatala.org",
 					}},
-				GitlabCommit{
+				{
 					ID:        "da1560886d4f094c3e6c9ef40349f7d38b5d27d7",
 					Message:   "fixed readme",
 					Timestamp: "2012-01-03T23:36:29+02:00",
@@ -115,7 +115,7 @@ var gitlabParseBytesTests = []gitlabParseBytesTest{
 				Homepage:    "https://gitlab.example.com/stefan.reuter/hirsch",
 			},
 			Commits: []GitlabCommit{
-				GitlabCommit{
+				{
 					ID:        "bb598afb3d5c08d5e69d3eefcb8638d7b2e1790a",
 					Message:   "Test",
 					Timestamp: "2014-04-22T16:29:41+02:00",
