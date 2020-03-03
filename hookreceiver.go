@@ -36,13 +36,15 @@ func handleNotificationRequest(notificationRequest NotificationRequest) {
 	if repositoryConfig, found := config.FindRepositoryConfig(notificationRequest.Path, notificationRequest.Notification); found {
 		log.Printf("Executing command %q in %q", repositoryConfig.Command, repositoryConfig.Dir)
 
-		cmd := exec.Command("/bin/sh", "-c", repositoryConfig.Command)
-		cmd.Dir = repositoryConfig.Dir
-		out, err := cmd.CombinedOutput()
+		for _, cmdstr := range repositoryConfig.Command {
+			cmd := exec.Command("/bin/sh", "-c", cmdstr)
+			cmd.Dir = repositoryConfig.Dir
+			out, err := cmd.CombinedOutput()
 
-		log.Printf("Command output: %q", string(out))
-		if err != nil {
-			log.Printf("Command exited with error: %s\n", err)
+			log.Printf("Command output: %q", string(out))
+			if err != nil {
+				log.Printf("Command exited with error: %s\n", err)
+			}
 		}
 	} else {
 		log.Printf("Repo/branch not configured.")
@@ -89,6 +91,7 @@ var config Config
 
 func init() {
 	flag.StringVar(&configPath, "c", "/etc/hookreceiver.conf.d", "Config path (file or directory)")
+	flag.Parse()
 }
 
 func reloadConfig(c <-chan os.Signal) {
@@ -104,17 +107,11 @@ func reloadConfig(c <-chan os.Signal) {
 }
 
 func main() {
-	flag.Parse()
-	os.Exit(run())
-}
-
-func run() int {
 	var err error
 
 	config, err = ReadConfig(configPath)
 	if err != nil {
-		log.Fatal(err)
-		return 1
+		log.Fatalln(err)
 	}
 
 	notificationRequestChannel := make(chan NotificationRequest, bufferSize)
@@ -127,8 +124,7 @@ func run() int {
 	server := &http.Server{Addr: config.Addr}
 	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
-		log.Fatal(err)
-		return 1
+		log.Fatalln(err)
 	}
 
 	go server.Serve(listener)
@@ -146,6 +142,4 @@ func run() int {
 	log.Println("Exiting")
 	listener.Close()
 	// TODO: terminate handleNotifications()
-
-	return 0
 }
